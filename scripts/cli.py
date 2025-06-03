@@ -1,6 +1,5 @@
 import argparse, os
 from insightface.app import FaceAnalysis
-from insightface.utils import face_align
 import cv2
 
 def face_swap(source_path, target_path, output_path):
@@ -25,7 +24,7 @@ def face_swap(source_path, target_path, output_path):
         ret, frame = target_video.read()
         if not ret:
             break
-        out.write(frame)
+        out.write(frame)  # (remplace ici par le vrai swap si tu veux)
 
     target_video.release()
     out.release()
