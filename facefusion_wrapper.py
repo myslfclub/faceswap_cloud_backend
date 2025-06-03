@@ -2,13 +2,12 @@
 import subprocess
 
 def run_facefusion(source_path: str, target_path: str) -> str:
-    output_path = "output.jpg"
+    output_path = "output.mp4"
     command = [
-        "python", "run.py",
+        "python", "run_video.py",
         "--source", source_path,
         "--target", target_path,
-        "--output", output_path,
-        "--keep-frames", "false"
+        "--output", output_path
     ]
     result = subprocess.run(command, capture_output=True, text=True)
     if result.returncode != 0:

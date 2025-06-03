@@ -1,21 +1,21 @@
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse
-import base64
 import shutil
+import base64
 from facefusion_wrapper import run_facefusion
 
 app = FastAPI()
 
 @app.post("/faceswap")
 async def faceswap(source: UploadFile = File(...), target: UploadFile = File(...)):
-    with open("input_source.jpg", "wb") as f:
+    with open("input_video.mp4", "wb") as f:
         shutil.copyfileobj(source.file, f)
-    with open("input_target.jpg", "wb") as f:
+    with open("input_face.jpg", "wb") as f:
         shutil.copyfileobj(target.file, f)
 
-    output_path = run_facefusion("input_source.jpg", "input_target.jpg")
+    output_path = run_facefusion("input_video.mp4", "input_face.jpg")
 
-    with open(output_path, "rb") as img_file:
-        encoded = base64.b64encode(img_file.read()).decode("utf-8")
+    with open(output_path, "rb") as vid_file:
+        encoded = base64.b64encode(vid_file.read()).decode("utf-8")
     return JSONResponse(content={"result_base64": encoded})
