@@ -1,11 +1,10 @@
 
-# FaceSwap Backend with FaceFusion
+# FaceSwap Backend with FaceFusion via subprocess
 
-## Usage
-POST /faceswap with `source` and `target` images as `multipart/form-data`.
-Returns a base64-encoded image.
+## Structure
+- main.py: FastAPI app
+- facefusion_wrapper.py: calls FaceFusion via subprocess
+- facefusion/: embedded copy of FaceFusion repo (already included)
 
-## Example curl:
-curl -X POST http://localhost:10000/faceswap \
-  -F "source=@test_images/source.jpg" \
-  -F "target=@test_images/target.jpg"
+## Deployment
+Just upload to GitHub and connect to Render. No terminal needed.
