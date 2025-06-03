@@ -1,45 +1,21 @@
 
-from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-import shutil, os, subprocess
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
+import base64
+import shutil
+from facefusion_wrapper import run_facefusion
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 @app.post("/faceswap")
-async def faceswap_endpoint(
-    image: UploadFile = File(...),
-    video: UploadFile = File(...),
-    resolution: str = Form(...)
-):
-    tmp_dir = "/tmp/faceswap"
-    os.makedirs(tmp_dir, exist_ok=True)
+async def faceswap(source: UploadFile = File(...), target: UploadFile = File(...)):
+    with open("input_source.jpg", "wb") as f:
+        shutil.copyfileobj(source.file, f)
+    with open("input_target.jpg", "wb") as f:
+        shutil.copyfileobj(target.file, f)
 
-    image_path = os.path.join(tmp_dir, image.filename)
-    video_path = os.path.join(tmp_dir, video.filename)
-    output_path = os.path.join(tmp_dir, "result.mp4")
+    output_path = run_facefusion("input_source.jpg", "input_target.jpg")
 
-    with open(image_path, "wb") as img_file:
-        shutil.copyfileobj(image.file, img_file)
-    with open(video_path, "wb") as vid_file:
-        shutil.copyfileobj(video.file, vid_file)
-
-    try:
-        subprocess.run([
-            "python3", "scripts/cli.py",
-            "--target", video_path,
-            "--source", image_path,
-            "--output", output_path,
-            "--execution-provider", "cpu"
-        ], check=True)
-    except subprocess.CalledProcessError as e:
-        return {"error": "FaceSwap processing failed", "details": str(e)}
-
-    return FileResponse(output_path, media_type="video/mp4")
+    with open(output_path, "rb") as img_file:
+        encoded = base64.b64encode(img_file.read()).decode("utf-8")
+    return JSONResponse(content={"result_base64": encoded})
