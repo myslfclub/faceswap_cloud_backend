@@ -3,5 +3,5 @@ uvicorn
 python-multipart
 opencv-python
 torch
-facefusion @ git+https://github.com/facefusion/facefusion.git
+git+https://github.com/facefusion/facefusion.git
 
