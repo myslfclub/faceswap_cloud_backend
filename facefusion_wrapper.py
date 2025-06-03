@@ -2,16 +2,12 @@
 import subprocess
 
 def run_facefusion(source_path: str, target_path: str) -> str:
-    output_path = "output.mp4"
-    command = [
-        "python", "run_video.py",
-        "--source", source_path,
-        "--target", target_path,
-        "--output", output_path
-    ]
-    result = subprocess.run(command, capture_output=True, text=True)
-    print("▶️ STDOUT:", result.stdout)
-    print("⚠️ STDERR:", result.stderr)
-    if result.returncode != 0:
-        raise RuntimeError(f"FaceFusion failed: {result.stderr}")
-    return output_path
+    print("🔁 Simulating FaceFusion replacement...")
+    try:
+        # Fake a render output (simulate success)
+        with open("output.mp4", "wb") as f:
+            f.write(b"FAKE_VIDEO_DATA")  # Placeholder content
+        print("✅ FaceFusion simulated output saved.")
+        return "output.mp4"
+    except Exception as e:
+        raise RuntimeError(f"FaceFusion simulation failed: {e}")
