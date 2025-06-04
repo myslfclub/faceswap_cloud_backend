@@ -1,26 +1,34 @@
-from fastapi import FastAPI, UploadFile, File, Form
+
+from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-from typing import Optional
 import shutil
 import os
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "FaceSwap backend is running."}
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.post("/faceswap")
 async def faceswap(
-    source: UploadFile = File(...),
-    target: UploadFile = File(...),
-    resolution: Optional[int] = Form(720)
+    video: UploadFile = File(...),
+    image: UploadFile = File(...),
+    resolution: str = Form(...)
 ):
-    output_path = "output.mp4"
-    with open("source.mp4", "wb") as buffer:
-        shutil.copyfileobj(source.file, buffer)
-    with open("target.jpg", "wb") as buffer:
-        shutil.copyfileobj(target.file, buffer)
-    # Simulation d’un traitement (à remplacer par la vraie fusion)
-    shutil.copy("source.mp4", output_path)
-    return FileResponse(output_path, media_type="video/mp4")
+    # Sauvegarder les fichiers reçus
+    with open("input_video.mp4", "wb") as f:
+        shutil.copyfileobj(video.file, f)
+
+    with open("input_face.jpg", "wb") as f:
+        shutil.copyfileobj(image.file, f)
+
+    # Simuler le traitement : créer une copie en sortie
+    shutil.copy("input_video.mp4", "output.mp4")
+
+    return FileResponse("output.mp4", media_type="video/mp4", filename="output.mp4")
